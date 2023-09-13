@@ -1331,8 +1331,9 @@ public:
     Value pos = loopEmitter.getPosits()[0].back();
     // Loads the value from sparse tensor using position-index;
     // loads the value from dense tensor using coords.
-    Value val = enc ? rewriter.create<memref::LoadOp>(loc, vals, pos)
-                    : rewriter.create<memref::LoadOp>(loc, vals, lcvs);
+    Value val =
+        enc ? rewriter.create<memref::LoadOp>(loc, vals, pos).getResult()
+            : rewriter.create<tensor::ExtractOp>(loc, vals, lcvs).getResult();
 
     // 2. Inline the block in the foreach operator.
     Block *srcBlock = op.getBody();

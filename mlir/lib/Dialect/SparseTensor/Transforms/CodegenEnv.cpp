@@ -66,13 +66,13 @@ LogicalResult CodegenEnv::initTensorExp() {
     return failure();
 
   tensorExp = *optExp;
+  insChain = linalgOp.getDpsInitOperand(0)->get();
   return success();
 }
 
 void CodegenEnv::startEmit() {
-  assert(insChain == nullptr && "must only start emitting once");
   if (sparseOut) {
-    insChain = sparseOut->get();
+    assert(insChain == sparseOut->get());
     latticeMerger.setHasSparseOut(true);
   }
 
@@ -247,7 +247,8 @@ Value CodegenEnv::getLoopVar(LoopId i) const {
 //===----------------------------------------------------------------------===//
 
 void CodegenEnv::updateInsertionChain(Value chain) {
-  assert(sparseOut != nullptr && insChain != nullptr);
+  // Both sparse/dense output require insertion chain.
+  assert(insChain != nullptr);
   insChain = chain;
 }
 

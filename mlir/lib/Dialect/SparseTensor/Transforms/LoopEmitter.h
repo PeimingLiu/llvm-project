@@ -76,8 +76,8 @@ class LoopEmitter {
 public:
   /// Optional callback function to setup dense output tensors when
   /// initializing the loop emitter (e.g., to fill a dense output with zeros).
-  using OutputUpdater = function_ref<Value(OpBuilder &builder, Location loc,
-                                           Value memref, Value tensor)>;
+  using OutputUpdater =
+      function_ref<Value(OpBuilder &builder, Location loc, Value tensor)>;
 
   /// Optional callback function to set the bound for the synthetic tensor,
   /// which essentially is the dense loop bound.

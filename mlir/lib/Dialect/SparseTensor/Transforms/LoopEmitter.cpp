@@ -476,13 +476,11 @@ void LoopEmitter::initializeLoopEmit(
       if (llvm::isa_and_nonnull<tensor::ExtractSliceOp>(tensor.getDefiningOp()))
         denseTp = bufferization::getMemRefTypeWithFullyDynamicLayout(rtp);
 
-      Value denseVal =
-          builder.create<bufferization::ToMemrefOp>(loc, denseTp, tensor);
       // Dense outputs need special handling.
       if (isOutput && updater)
-        denseVal = updater(builder, loc, denseVal, tensor);
-
-      valBuffer[t] = denseVal;
+        valBuffer[t] = updater(builder, loc, tensor);
+      else
+        valBuffer[t] = tensor;
     } else {
       // Annotated sparse tensors.
       // We also need the value buffer for all-dense annotated "sparse" tensors.
@@ -1349,7 +1347,14 @@ void LoopEmitter::exitForLoop(RewriterBase &rewriter, Location loc,
     for (unsigned i = 0, e = forOp.getResults().size(); i < e; i++)
       reduc[i] = forOp.getResult(i);
   } else {
+    // There should a little be one reduction value for the insertion chain of
+    // the output tensor.
+    assert(!reduc.empty() &&
+           reduc.back().getType() == tensors[getOutTensorId()].getType());
+
     auto parOp = llvm::cast<scf::ParallelOp>(loopInfo.loop);
+    MutableArrayRef<Value> redWithInsert = reduc;
+    reduc = redWithInsert.drop_back();
     if (!reduc.empty()) {
       assert(reduc.size() == parOp.getInitVals().size() && reduc.size() == 1);
       Operation *redExp = reduc.front().getDefiningOp();
@@ -1398,7 +1403,7 @@ void LoopEmitter::exitForLoop(RewriterBase &rewriter, Location loc,
     rewriter.setInsertionPointAfter(parOp);
     // In-place update reduction variables.
     for (unsigned i = 0, e = parOp.getResults().size(); i < e; i++)
-      reduc[i] = parOp.getResult(i);
+      redWithInsert[i] = parOp.getResult(i);
   }
 
   // Finished iterating a tensor, clean up

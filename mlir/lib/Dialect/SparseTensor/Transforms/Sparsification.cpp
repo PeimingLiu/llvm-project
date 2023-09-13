@@ -874,8 +874,7 @@ static void genBuffers(CodegenEnv &env, OpBuilder &builder) {
       /// For updates (viz. x(i) += y(i) * z(i)), only nonzeroes values are used
       /// for the updates and no assumption on the original contents of the
       /// output buffer is necessary.
-      [&op](OpBuilder &builder, Location loc, Value memref,
-            Value tensor) -> Value {
+      [&op](OpBuilder &builder, Location loc, Value tensor) -> Value {
         // Must not be a sparse tensor.
         assert(!getSparseTensorEncoding(tensor.getType()));
         // Two output tensor references should point to the same object.
@@ -890,7 +889,7 @@ static void genBuffers(CodegenEnv &env, OpBuilder &builder) {
         // O(nnz) for matrices).
         // TODO: use better analysis to avoid zeroing out the buffer?
         bool isInit = op.isInitTensor(lhs);
-        Value init = memref;
+        Value init = tensor;
         if (!isInit) {
           Value zero = constantZero(builder, loc,
                                     getElementTypeOrSelf(tensor.getType()));
@@ -1079,6 +1078,13 @@ static Value genTensorLoad(CodegenEnv &env, OpBuilder &builder, ExprId exp) {
   // Actual load.
   SmallVector<Value> args;
   Value ptr = genSubscript(env, builder, t, args);
+  if (ptr.getType().isa<TensorType>()) {
+    // Output tensor's SSA chain keeps updating
+    if (t == op.getDpsInitOperand(0))
+      ptr = env.getInsertionChain();
+    return builder.create<tensor::ExtractOp>(op.getLoc(), ptr, args);
+  }
+  // FIXME: Migrates all memref.load to tensor tensor.extract.
   return builder.create<memref::LoadOp>(op.getLoc(), ptr, args);
 }
 
@@ -1105,8 +1111,14 @@ static void genTensorStore(CodegenEnv &env, OpBuilder &builder, ExprId exp,
   OpOperand *t = op.getDpsInitOperand(0);
   if (!env.isSparseOutput(t)) {
     SmallVector<Value> args;
+    // FIXME: we are in the middle of migrating all memref.load/store to
+    // tensor.extract/insert, `genSubscript` assumes memref ptr, thus the
+    // returned value for the pointer is invalid because tensor SSA value might
+    // have been updated. We need to unify the behavior.
     Value ptr = genSubscript(env, builder, t, args);
-    builder.create<memref::StoreOp>(loc, rhs, ptr, args);
+    ptr = env.getInsertionChain();
+    Value ret = builder.create<tensor::InsertOp>(loc, rhs, ptr, args);
+    env.updateInsertionChain(ret);
     return;
   }
   // Store during sparse insertion.
@@ -1158,6 +1170,12 @@ static Value relinkBranch(CodegenEnv &env, RewriterBase &rewriter, Block *block,
       assert(!getSparseTensorType(t->get()).hasEncoding()); // dense!
       SmallVector<Value> args;
       Value ptr = genSubscript(env, rewriter, t, args);
+      if (ptr.getType().isa<TensorType>()) {
+        // Output tensor's SSA chain keeps updating
+        if (t == op.getDpsInitOperand(0))
+          ptr = env.getInsertionChain();
+        return rewriter.create<tensor::ExtractOp>(op.getLoc(), ptr, args);
+      }
       return rewriter.create<memref::LoadOp>(op.getLoc(), ptr, args);
     }
   } else if (Operation *def = e.getDefiningOp()) {
@@ -1921,8 +1939,8 @@ static void genResult(CodegenEnv &env, RewriterBase &rewriter) {
   } else {
     // To rematerialize an non-annotated tensor, simply load it
     // from the bufferized value.
-    Value val = env.emitter().getValBuffer()[env.merger().getOutTensorID()];
-    rewriter.replaceOpWithNewOp<bufferization::ToTensorOp>(op, resType, val);
+    Value val = env.getInsertionChain();
+    rewriter.replaceOp(op, val);
   }
 }
 
