@@ -11,6 +11,7 @@
 #include "mlir/Conversion/GPUToNVVM/GPUToNVVMPass.h"
 #include "mlir/Conversion/Passes.h"
 #include "mlir/Dialect/Arith/Transforms/Passes.h"
+#include "mlir/Dialect/Async/Passes.h"
 #include "mlir/Dialect/Bufferization/Transforms/Bufferize.h"
 #include "mlir/Dialect/Bufferization/Transforms/OneShotAnalysis.h"
 #include "mlir/Dialect/Bufferization/Transforms/Passes.h"
@@ -20,6 +21,7 @@
 #include "mlir/Dialect/LLVMIR/NVVMDialect.h"
 #include "mlir/Dialect/Linalg/Passes.h"
 #include "mlir/Dialect/MemRef/Transforms/Passes.h"
+#include "mlir/Dialect/SCF/Transforms/Passes.h"
 #include "mlir/Dialect/SparseTensor/IR/SparseTensor.h"
 #include "mlir/Dialect/SparseTensor/Transforms/Passes.h"
 #include "mlir/Pass/PassManager.h"
@@ -62,6 +64,13 @@ void mlir::sparse_tensor::buildSparsifier(OpPassManager &pm,
     pm.addNestedPass<gpu::GPUModuleOp>(createStripDebugInfoPass());
     pm.addNestedPass<gpu::GPUModuleOp>(createConvertSCFToCFPass());
     pm.addNestedPass<gpu::GPUModuleOp>(createConvertGpuOpsToNVVMOps());
+  } else {
+    pm.addPass(createParallelLoopFusionPass());
+    pm.addPass(createAsyncParallelForPass(false, 20, 4));
+    pm.addPass(createAsyncToAsyncRuntimePass());
+    pm.addPass(createAsyncRuntimeRefCountingPass());
+    pm.addPass(createAsyncRuntimeRefCountingOptPass());
+    pm.addPass(createConvertAsyncToLLVMPass());
   }
 
   // Progressively lower to LLVM. Note that the convert-vector-to-llvm
@@ -76,6 +85,7 @@ void mlir::sparse_tensor::buildSparsifier(OpPassManager &pm,
   pm.addPass(createLowerAffinePass());
   pm.addPass(createConvertVectorToLLVMPass(options.lowerVectorToLLVMOptions()));
   pm.addPass(createFinalizeMemRefToLLVMConversionPass());
+  pm.addPass(memref::createExpandOpsPass());
   pm.addNestedPass<func::FuncOp>(createConvertComplexToStandardPass());
   pm.addNestedPass<func::FuncOp>(arith::createArithExpandOpsPass());
   pm.addNestedPass<func::FuncOp>(createConvertMathToLLVMPass());

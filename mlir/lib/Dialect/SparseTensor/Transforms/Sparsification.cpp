@@ -796,6 +796,13 @@ static bool shouldTryParallize(CodegenEnv &env, LoopId curr,
                                ArrayRef<TensorLevel> tidLvls) {
   linalg::GenericOp op = env.op();
   auto iteratorTypes = op.getIteratorTypesArray();
+  ArrayRef iterTps = iteratorTypes;
+  if (llvm::any_of(iterTps.take_front(curr + 1), [](utils::IteratorType t) {
+        return t == utils::IteratorType::reduction;
+      })) {
+    return false;
+  }
+
   bool isSparse = llvm::any_of(tidLvls, [curr, &env](TensorLevel tidLvl) {
     // Queries the LT based on the tensor and loop id, as requested by
     // `CodegenEnv::lt(TensorId, LoopId)`. The returned LT from CodegenEnv
