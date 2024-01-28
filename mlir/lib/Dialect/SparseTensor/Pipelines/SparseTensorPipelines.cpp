@@ -10,6 +10,7 @@
 
 #include "mlir/Conversion/GPUToNVVM/GPUToNVVMPass.h"
 #include "mlir/Conversion/Passes.h"
+#include "mlir/Conversion/SCFToOpenMP/SCFToOpenMP.h"
 #include "mlir/Dialect/Arith/Transforms/Passes.h"
 #include "mlir/Dialect/Async/Passes.h"
 #include "mlir/Dialect/Bufferization/Transforms/Bufferize.h"
@@ -66,26 +67,34 @@ void mlir::sparse_tensor::buildSparsifier(OpPassManager &pm,
     pm.addNestedPass<gpu::GPUModuleOp>(createConvertGpuOpsToNVVMOps());
   } else {
     pm.addPass(createParallelLoopFusionPass());
-    pm.addPass(createAsyncParallelForPass(false, 20, 4));
-    pm.addPass(createAsyncToAsyncRuntimePass());
-    pm.addPass(createAsyncRuntimeRefCountingPass());
-    pm.addPass(createAsyncRuntimeRefCountingOptPass());
-    pm.addPass(createConvertAsyncToLLVMPass());
+    pm.addPass(createTestSCFParallelLoopCollapsingPass());
+    pm.addPass(createLoopInvariantCodeMotionPass());
+    ConvertSCFToOpenMPPassOptions omp;
+    omp.numThreads = 20;
+    pm.addPass(createConvertSCFToOpenMPPass(omp));
+    // pm.addPass(createAsyncParallelForPass(false, 20, 4));
+    // pm.addPass(createAsyncToAsyncRuntimePass());
+    // pm.addPass(createAsyncRuntimeRefCountingPass());
+    // pm.addPass(createAsyncRuntimeRefCountingOptPass());
+    // pm.addPass(createConvertAsyncToLLVMPass());
   }
 
   // Progressively lower to LLVM. Note that the convert-vector-to-llvm
   // pass is repeated on purpose.
   // TODO(springerm): Add sparse support to the BufferDeallocation pass and add
   // it to this pipeline.
+  pm.addPass(memref::createExpandStridedMetadataPass());
+  pm.addPass(memref::createExpandOpsPass());
+  pm.addPass(createFinalizeMemRefToLLVMConversionPass());
+
   pm.addNestedPass<func::FuncOp>(createConvertLinalgToLoopsPass());
   pm.addNestedPass<func::FuncOp>(createConvertVectorToSCFPass());
   pm.addNestedPass<func::FuncOp>(memref::createExpandReallocPass());
   pm.addNestedPass<func::FuncOp>(createConvertSCFToCFPass());
-  pm.addPass(memref::createExpandStridedMetadataPass());
+
   pm.addPass(createLowerAffinePass());
   pm.addPass(createConvertVectorToLLVMPass(options.lowerVectorToLLVMOptions()));
-  pm.addPass(createFinalizeMemRefToLLVMConversionPass());
-  pm.addPass(memref::createExpandOpsPass());
+
   pm.addNestedPass<func::FuncOp>(createConvertComplexToStandardPass());
   pm.addNestedPass<func::FuncOp>(arith::createArithExpandOpsPass());
   pm.addNestedPass<func::FuncOp>(createConvertMathToLLVMPass());
@@ -94,6 +103,7 @@ void mlir::sparse_tensor::buildSparsifier(OpPassManager &pm,
   pm.addPass(createConvertVectorToLLVMPass(options.lowerVectorToLLVMOptions()));
   pm.addPass(createConvertComplexToLLVMPass());
   pm.addPass(createConvertVectorToLLVMPass(options.lowerVectorToLLVMOptions()));
+  pm.addPass(createConvertOpenMPToLLVMPass());
   pm.addPass(createConvertFuncToLLVMPass());
 
   // Finalize GPU code generation.

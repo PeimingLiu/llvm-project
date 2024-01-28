@@ -37,6 +37,7 @@ struct TestSCFParallelLoopCollapsing
 
     // Gather the input args into the format required by
     // `collapseParallelLoops`.
+    combinedLoops.push_back({0, 1});
     if (!clCollapsedIndices0.empty())
       combinedLoops.push_back(clCollapsedIndices0);
     if (!clCollapsedIndices1.empty()) {

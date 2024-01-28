@@ -797,6 +797,9 @@ static bool shouldTryParallize(CodegenEnv &env, LoopId curr,
   linalg::GenericOp op = env.op();
   auto iteratorTypes = op.getIteratorTypesArray();
   ArrayRef iterTps = iteratorTypes;
+  if (curr == 0)
+    return false;
+
   if (llvm::any_of(iterTps.take_front(curr + 1), [](utils::IteratorType t) {
         return t == utils::IteratorType::reduction;
       })) {
