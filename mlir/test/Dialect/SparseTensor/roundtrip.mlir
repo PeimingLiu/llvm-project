@@ -95,10 +95,10 @@ func.func @sparse_convert_3d_from_sparse(%arg0: tensor<8x8x8xf64, #SparseTensor>
 
 // CHECK-LABEL: func @sparse_positions(
 //  CHECK-SAME: %[[A:.*]]: tensor<128xf64, #{{.*}}>)
-//       CHECK: %[[T:.*]] = sparse_tensor.positions %[[A]] {level = 0 : index} : tensor<128xf64, #{{.*}}> to memref<?xindex>
+//       CHECK: %[[T:.*]] = sparse_tensor.positions %[[A]] {level = 0 : index} : tensor<128xf64, #{{.*}}>
 //       CHECK: return %[[T]] : memref<?xindex>
 func.func @sparse_positions(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xindex> {
-  %0 = sparse_tensor.positions %arg0 {level = 0 : index} : tensor<128xf64, #SparseVector> to memref<?xindex>
+  %0 = sparse_tensor.positions %arg0 {level = 0 : index} : tensor<128xf64, #SparseVector>
   return %0 : memref<?xindex>
 }
 
@@ -108,10 +108,10 @@ func.func @sparse_positions(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xi
 
 // CHECK-LABEL: func @sparse_indices_buffer(
 //  CHECK-SAME: %[[A:.*]]: tensor<?x?xf64, #{{.*}}>)
-//       CHECK: %[[T:.*]] = sparse_tensor.coordinates_buffer %[[A]] : tensor<?x?xf64, #{{.*}}> to memref<?xindex>
+//       CHECK: %[[T:.*]] = sparse_tensor.coordinates_buffer %[[A]] : tensor<?x?xf64, #{{.*}}>
 //       CHECK: return %[[T]] : memref<?xindex>
 func.func @sparse_indices_buffer(%arg0: tensor<?x?xf64, #COO>) -> memref<?xindex> {
-  %0 = sparse_tensor.coordinates_buffer %arg0 : tensor<?x?xf64, #COO> to memref<?xindex>
+  %0 = sparse_tensor.coordinates_buffer %arg0 : tensor<?x?xf64, #COO>
   return %0 : memref<?xindex>
 }
 
@@ -121,10 +121,10 @@ func.func @sparse_indices_buffer(%arg0: tensor<?x?xf64, #COO>) -> memref<?xindex
 
 // CHECK-LABEL: func @sparse_indices(
 //  CHECK-SAME: %[[A:.*]]: tensor<128xf64, #{{.*}}>)
-//       CHECK: %[[T:.*]] = sparse_tensor.coordinates %[[A]] {level = 0 : index} : tensor<128xf64, #{{.*}}> to memref<?xindex>
+//       CHECK: %[[T:.*]] = sparse_tensor.coordinates %[[A]] {level = 0 : index} : tensor<128xf64, #{{.*}}>
 //       CHECK: return %[[T]] : memref<?xindex>
 func.func @sparse_indices(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xindex> {
-  %0 = sparse_tensor.coordinates %arg0 {level = 0 : index} : tensor<128xf64, #SparseVector> to memref<?xindex>
+  %0 = sparse_tensor.coordinates %arg0 {level = 0 : index} : tensor<128xf64, #SparseVector>
   return %0 : memref<?xindex>
 }
 
@@ -134,10 +134,10 @@ func.func @sparse_indices(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xind
 
 // CHECK-LABEL: func @sparse_values(
 //  CHECK-SAME: %[[A:.*]]: tensor<128xf64, #{{.*}}>)
-//       CHECK: %[[T:.*]] = sparse_tensor.values %[[A]] : tensor<128xf64, #{{.*}}> to memref<?xf64>
+//       CHECK: %[[T:.*]] = sparse_tensor.values %[[A]] : tensor<128xf64, #{{.*}}>
 //       CHECK: return %[[T]] : memref<?xf64>
 func.func @sparse_values(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xf64> {
-  %0 = sparse_tensor.values %arg0 : tensor<128xf64, #SparseVector> to memref<?xf64>
+  %0 = sparse_tensor.values %arg0 : tensor<128xf64, #SparseVector>
   return %0 : memref<?xf64>
 }
 

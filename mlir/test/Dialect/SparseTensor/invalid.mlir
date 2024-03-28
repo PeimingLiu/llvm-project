@@ -97,7 +97,7 @@ func.func @invalid_unpack_mis_position(%sp: tensor<2x100xf64, #CSR>, %values: te
 
 func.func @invalid_positions_dense(%arg0: tensor<128xf64>) -> memref<?xindex> {
   // expected-error@+1 {{'sparse_tensor.positions' op operand #0 must be sparse tensor of any type values, but got 'tensor<128xf64>'}}
-  %0 = sparse_tensor.positions %arg0 { level = 0 : index } : tensor<128xf64> to memref<?xindex>
+  %0 = sparse_tensor.positions %arg0 { level = 0 : index } : tensor<128xf64>
   return %0 : memref<?xindex>
 }
 
@@ -105,7 +105,7 @@ func.func @invalid_positions_dense(%arg0: tensor<128xf64>) -> memref<?xindex> {
 
 func.func @invalid_positions_unranked(%arg0: tensor<*xf64>) -> memref<?xindex> {
   // expected-error@+1 {{'sparse_tensor.positions' op operand #0 must be sparse tensor of any type values, but got 'tensor<*xf64>'}}
-  %0 = sparse_tensor.positions %arg0 { level = 0 : index } : tensor<*xf64> to memref<?xindex>
+  %0 = sparse_tensor.positions %arg0 { level = 0 : index } : tensor<*xf64>
   return %0 : memref<?xindex>
 }
 
@@ -115,7 +115,7 @@ func.func @invalid_positions_unranked(%arg0: tensor<*xf64>) -> memref<?xindex> {
 
 func.func @mismatch_positions_types(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xindex> {
   // expected-error@+1 {{unexpected type for positions}}
-  %0 = sparse_tensor.positions %arg0 { level = 0 : index } : tensor<128xf64, #SparseVector> to memref<?xindex>
+  %0 = sparse_tensor.positions %arg0 { level = 0 : index } : tensor<128xf64, #SparseVector>
   return %0 : memref<?xindex>
 }
 
@@ -125,7 +125,7 @@ func.func @mismatch_positions_types(%arg0: tensor<128xf64, #SparseVector>) -> me
 
 func.func @positions_oob(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xindex> {
   // expected-error@+1 {{requested level is out of bounds}}
-  %0 = sparse_tensor.positions %arg0 { level = 1 : index } : tensor<128xf64, #SparseVector> to memref<?xindex>
+  %0 = sparse_tensor.positions %arg0 { level = 1 : index } : tensor<128xf64, #SparseVector>
   return %0 : memref<?xindex>
 }
 
@@ -133,7 +133,7 @@ func.func @positions_oob(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xinde
 
 func.func @invalid_indices_dense(%arg0: tensor<10x10xi32>) -> memref<?xindex> {
   // expected-error@+1 {{'sparse_tensor.coordinates' op operand #0 must be sparse tensor of any type values, but got 'tensor<10x10xi32>'}}
-  %0 = sparse_tensor.coordinates %arg0 { level = 1 : index } : tensor<10x10xi32> to memref<?xindex>
+  %0 = sparse_tensor.coordinates %arg0 { level = 1 : index } : tensor<10x10xi32>
   return %0 : memref<?xindex>
 }
 
@@ -141,7 +141,7 @@ func.func @invalid_indices_dense(%arg0: tensor<10x10xi32>) -> memref<?xindex> {
 
 func.func @invalid_indices_unranked(%arg0: tensor<*xf64>) -> memref<?xindex> {
   // expected-error@+1 {{'sparse_tensor.coordinates' op operand #0 must be sparse tensor of any type values, but got 'tensor<*xf64>'}}
-  %0 = sparse_tensor.coordinates %arg0 { level = 0 : index } : tensor<*xf64> to memref<?xindex>
+  %0 = sparse_tensor.coordinates %arg0 { level = 0 : index } : tensor<*xf64>
   return %0 : memref<?xindex>
 }
 
@@ -151,7 +151,7 @@ func.func @invalid_indices_unranked(%arg0: tensor<*xf64>) -> memref<?xindex> {
 
 func.func @mismatch_indices_types(%arg0: tensor<?xf64, #SparseVector>) -> memref<?xi32> {
   // expected-error@+1 {{unexpected type for coordinates}}
-  %0 = sparse_tensor.coordinates %arg0 { level = 0 : index } : tensor<?xf64, #SparseVector> to memref<?xi32>
+  %0 = sparse_tensor.coordinates %arg0 { level = 0 : index } : tensor<?xf64, #SparseVector>
   return %0 : memref<?xi32>
 }
 
@@ -161,7 +161,7 @@ func.func @mismatch_indices_types(%arg0: tensor<?xf64, #SparseVector>) -> memref
 
 func.func @indices_oob(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xindex> {
   // expected-error@+1 {{requested level is out of bounds}}
-  %0 = sparse_tensor.coordinates %arg0 { level = 1 : index } : tensor<128xf64, #SparseVector> to memref<?xindex>
+  %0 = sparse_tensor.coordinates %arg0 { level = 1 : index } : tensor<128xf64, #SparseVector>
   return %0 : memref<?xindex>
 }
 
@@ -169,7 +169,7 @@ func.func @indices_oob(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xindex>
 
 func.func @invalid_values_dense(%arg0: tensor<1024xf32>) -> memref<?xf32> {
   // expected-error@+1 {{'sparse_tensor.values' op operand #0 must be sparse tensor of any type values, but got 'tensor<1024xf32>'}}
-  %0 = sparse_tensor.values %arg0 : tensor<1024xf32> to memref<?xf32>
+  %0 = sparse_tensor.values %arg0 : tensor<1024xf32>
   return %0 : memref<?xf32>
 }
 
@@ -179,7 +179,7 @@ func.func @invalid_values_dense(%arg0: tensor<1024xf32>) -> memref<?xf32> {
 
 func.func @indices_buffer_noncoo(%arg0: tensor<128xf64, #SparseVector>) -> memref<?xindex> {
   // expected-error@+1 {{expected sparse tensor with a COO region}}
-  %0 = sparse_tensor.coordinates_buffer %arg0 : tensor<128xf64, #SparseVector> to memref<?xindex>
+  %0 = sparse_tensor.coordinates_buffer %arg0 : tensor<128xf64, #SparseVector>
   return %0 : memref<?xindex>
 }
 
@@ -187,7 +187,7 @@ func.func @indices_buffer_noncoo(%arg0: tensor<128xf64, #SparseVector>) -> memre
 
 func.func @indices_buffer_dense(%arg0: tensor<1024xf32>) -> memref<?xindex> {
   // expected-error@+1 {{must be sparse tensor of any type values}}
-  %0 = sparse_tensor.coordinates_buffer %arg0 : tensor<1024xf32> to memref<?xindex>
+  %0 = sparse_tensor.coordinates_buffer %arg0 : tensor<1024xf32>
   return %0 : memref<?xindex>
 }
 
@@ -197,7 +197,7 @@ func.func @indices_buffer_dense(%arg0: tensor<1024xf32>) -> memref<?xindex> {
 
 func.func @mismatch_values_types(%arg0: tensor<?xf64, #SparseVector>) -> memref<?xf32> {
   // expected-error@+1 {{unexpected mismatch in element types}}
-  %0 = sparse_tensor.values %arg0 : tensor<?xf64, #SparseVector> to memref<?xf32>
+  %0 = sparse_tensor.values %arg0 : tensor<?xf64, #SparseVector>
   return %0 : memref<?xf32>
 }
 

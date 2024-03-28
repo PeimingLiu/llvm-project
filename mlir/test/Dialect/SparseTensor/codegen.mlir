@@ -268,7 +268,7 @@ func.func @sparse_dense_3d_dyn(%arg0: tensor<?x?x?xf64, #Dense3D>) -> index {
 //  CHECK-SAME: %[[A5:.*5]]: !sparse_tensor.storage_specifier
 //       CHECK: return %[[A2]] : memref<?xi32>
 func.func @sparse_positions_dcsr(%arg0: tensor<?x?xf64, #DCSR>) -> memref<?xi32> {
-  %0 = sparse_tensor.positions %arg0 { level = 1 : index } : tensor<?x?xf64, #DCSR> to memref<?xi32>
+  %0 = sparse_tensor.positions %arg0 { level = 1 : index } : tensor<?x?xf64, #DCSR>
   return %0 : memref<?xi32>
 }
 
@@ -281,7 +281,7 @@ func.func @sparse_positions_dcsr(%arg0: tensor<?x?xf64, #DCSR>) -> memref<?xi32>
 //  CHECK-SAME: %[[A5:.*5]]: !sparse_tensor.storage_specifier
 //       CHECK: return %[[A3]] : memref<?xi64>
 func.func @sparse_indices_dcsr(%arg0: tensor<?x?xf64, #DCSR>) -> memref<?xi64> {
-  %0 = sparse_tensor.coordinates %arg0 { level = 1 : index } : tensor<?x?xf64, #DCSR> to memref<?xi64>
+  %0 = sparse_tensor.coordinates %arg0 { level = 1 : index } : tensor<?x?xf64, #DCSR>
   return %0 : memref<?xi64>
 }
 
@@ -294,7 +294,7 @@ func.func @sparse_indices_dcsr(%arg0: tensor<?x?xf64, #DCSR>) -> memref<?xi64> {
 //  CHECK-SAME: %[[A5:.*5]]: !sparse_tensor.storage_specifier
 //       CHECK: return %[[A4]] : memref<?xf64>
 func.func @sparse_values_dcsr(%arg0: tensor<?x?xf64, #DCSR>) -> memref<?xf64> {
-  %0 = sparse_tensor.values %arg0 : tensor<?x?xf64, #DCSR> to memref<?xf64>
+  %0 = sparse_tensor.values %arg0 : tensor<?x?xf64, #DCSR>
   return %0 : memref<?xf64>
 }
 
@@ -307,7 +307,7 @@ func.func @sparse_values_dcsr(%arg0: tensor<?x?xf64, #DCSR>) -> memref<?xf64> {
 //  CHECK-SAME: %[[A5:.*5]]: !sparse_tensor.storage_specifier
 //       CHECK: return %[[A4]] : memref<?xf64>
 func.func @sparse_values_coo(%arg0: tensor<?x?x?xf64, #ccoo>) -> memref<?xf64> {
-  %0 = sparse_tensor.values %arg0 : tensor<?x?x?xf64, #ccoo> to memref<?xf64>
+  %0 = sparse_tensor.values %arg0 : tensor<?x?x?xf64, #ccoo>
   return %0 : memref<?xf64>
 }
 
@@ -326,7 +326,7 @@ func.func @sparse_values_coo(%arg0: tensor<?x?x?xf64, #ccoo>) -> memref<?xf64> {
 //       CHECK: %[[R2:.*]] = memref.cast %[[R1]] : memref<?xindex, strided<[2]>> to memref<?xindex, strided<[?], offset: ?>>
 //       CHECK: return %[[R2]] : memref<?xindex, strided<[?], offset: ?>>
 func.func @sparse_indices_coo(%arg0: tensor<?x?x?xf64, #ccoo>) -> memref<?xindex, strided<[?], offset: ?>> {
-  %0 = sparse_tensor.coordinates  %arg0 { level = 1 : index } : tensor<?x?x?xf64, #ccoo> to memref<?xindex, strided<[?], offset: ?>>
+  %0 = sparse_tensor.coordinates  %arg0 { level = 1 : index } : tensor<?x?x?xf64, #ccoo>
   return %0 : memref<?xindex, strided<[?], offset: ?>>
 }
 
@@ -339,7 +339,7 @@ func.func @sparse_indices_coo(%arg0: tensor<?x?x?xf64, #ccoo>) -> memref<?xindex
 //  CHECK-SAME: %[[A5:.*5]]: !sparse_tensor.storage_specifier
 //       CHECK: return %[[A3]] : memref<?xindex>
 func.func @sparse_indices_buffer_coo(%arg0: tensor<?x?x?xf64, #ccoo>) -> memref<?xindex> {
-  %0 = sparse_tensor.coordinates_buffer  %arg0 : tensor<?x?x?xf64, #ccoo> to memref<?xindex>
+  %0 = sparse_tensor.coordinates_buffer  %arg0 : tensor<?x?x?xf64, #ccoo>
   return %0 : memref<?xindex>
 }
 

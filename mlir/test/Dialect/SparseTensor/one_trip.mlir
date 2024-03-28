@@ -16,7 +16,7 @@
 // CHECK-SAME:    %[[VAL_0:.*]]: tensor<1x1xf32, #sparse{{[0-9]*}}>)
 // CHECK-DAG:     %[[VAL_1:.*]] = arith.constant 0 : index
 // CHECK-DAG:     %[[VAL_2:.*]] = arith.constant 2.000000e+00 : f32
-// CHECK:         %[[VAL_3:.*]] = sparse_tensor.values %[[VAL_0]] : tensor<1x1xf32, #sparse{{[0-9]*}}> to memref<?xf32>
+// CHECK:         %[[VAL_3:.*]] = sparse_tensor.values %[[VAL_0]] : tensor<1x1xf32, #sparse{{[0-9]*}}>
 // CHECK:         %[[VAL_4:.*]] = memref.load %[[VAL_3]]{{\[}}%[[VAL_1]]] : memref<?xf32>
 // CHECK:         %[[VAL_5:.*]] = arith.mulf %[[VAL_4]], %[[VAL_2]] : f32
 // CHECK:         memref.store %[[VAL_5]], %[[VAL_3]]{{\[}}%[[VAL_1]]] : memref<?xf32>

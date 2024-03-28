@@ -11,9 +11,9 @@
 // CHECK:           %[[VAL_4:.*]] = arith.constant 4 : index
 // CHECK:           %[[VAL_5:.*]] = arith.constant 8 : index
 // CHECK:           %[[VAL_6:.*]] = tensor.empty() : tensor<8x4x2xf32>
-// CHECK:           %[[VAL_7:.*]] = sparse_tensor.positions %[[VAL_0]] {level = 2 : index} : tensor<8x4x2xf32, #sparse{{[0-9]*}}> to memref<8x?xindex>
-// CHECK:           %[[VAL_8:.*]] = sparse_tensor.coordinates %[[VAL_0]] {level = 2 : index} : tensor<8x4x2xf32, #sparse{{[0-9]*}}> to memref<8x?xindex>
-// CHECK:           %[[VAL_9:.*]] = sparse_tensor.values %[[VAL_0]] : tensor<8x4x2xf32, #sparse{{[0-9]*}}> to memref<8x?xf32>
+// CHECK:           %[[VAL_7:.*]] = sparse_tensor.positions %[[VAL_0]] {level = 2 : index} : tensor<8x4x2xf32, #sparse{{[0-9]*}}>
+// CHECK:           %[[VAL_8:.*]] = sparse_tensor.coordinates %[[VAL_0]] {level = 2 : index} : tensor<8x4x2xf32, #sparse{{[0-9]*}}>
+// CHECK:           %[[VAL_9:.*]] = sparse_tensor.values %[[VAL_0]] : tensor<8x4x2xf32, #sparse{{[0-9]*}}>
 // CHECK:           %[[VAL_10:.*]] = bufferization.to_memref %[[VAL_6]] : memref<8x4x2xf32>
 // CHECK:           linalg.fill ins(%[[VAL_3]] : f32) outs(%[[VAL_10]] : memref<8x4x2xf32>)
 // CHECK:           scf.for %[[VAL_11:.*]] = %[[VAL_2]] to %[[VAL_5]] step %[[VAL_1]] {

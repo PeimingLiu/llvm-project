@@ -280,10 +280,10 @@ def SparseTensor_ToPositionsOp : SparseTensor_Op<"positions",
 
     ```mlir
     %1 = sparse_tensor.positions %0 { level = 1 : index }
-       : tensor<64x64xf64, #CSR> to memref<?xindex>
+       : tensor<64x64xf64, #CSR>
     ```
   }];
-  let assemblyFormat = "$tensor attr-dict `:` type($tensor) `to` type($result)";
+  let assemblyFormat = "$tensor attr-dict `:` type($tensor)";
   let hasVerifier = 1;
 }
 
@@ -307,10 +307,10 @@ def SparseTensor_ToCoordinatesOp : SparseTensor_Op<"coordinates",
 
     ```mlir
     %1 = sparse_tensor.coordinates %0 { level = 1 : index }
-       : tensor<64x64xf64, #CSR> to memref<?xindex>
+       : tensor<64x64xf64, #CSR>
     ```
   }];
-  let assemblyFormat = "$tensor attr-dict `:` type($tensor) `to` type($result)";
+  let assemblyFormat = "$tensor attr-dict `:` type($tensor)";
   let hasVerifier = 1;
 }
 
@@ -339,10 +339,10 @@ def SparseTensor_ToCoordinatesBufferOp : SparseTensor_Op<"coordinates_buffer",
 
     ```mlir
     %1 = sparse_tensor.coordinates_buffer %0
-       : tensor<64x64xf64, #COO> to memref<?xindex>
+       : tensor<64x64xf64, #COO>
     ```
   }];
-  let assemblyFormat = "$tensor attr-dict `:` type($tensor) `to` type($result)";
+  let assemblyFormat = "$tensor attr-dict `:` type($tensor)";
   let hasVerifier = 1;
 }
 
@@ -365,10 +365,10 @@ def SparseTensor_ToValuesOp : SparseTensor_Op<"values",
     Example:
 
     ```mlir
-    %1 = sparse_tensor.values %0 : tensor<64x64xf64, #CSR> to memref<?xf64>
+    %1 = sparse_tensor.values %0 : tensor<64x64xf64, #CSR>
     ```
   }];
-  let assemblyFormat = "$tensor attr-dict `:` type($tensor) `to` type($result)";
+  let assemblyFormat = "$tensor attr-dict `:` type($tensor)";
   let hasVerifier = 1;
 }
 

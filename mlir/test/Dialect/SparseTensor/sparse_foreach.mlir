@@ -149,8 +149,8 @@ func.func @foreach_print_slice(%A: tensor<4x4xf64, #CSR_SLICE>) {
 // C_HECK-DAG:       %[[VAL_2:.*]] = arith.constant 0 : index
 // C_HECK-DAG:       %[[VAL_3:.*]] = arith.constant 1 : index
 // C_HECK-DAG:       %[[VAL_4:.*]] = arith.constant 2 : index
-// C_HECK-DAG:       %[[VAL_5:.*]] = sparse_tensor.positions %[[VAL_0]] {level = 1 : index} : tensor<4x4x4xf64, #sparse{{[0-9]*}}> to memref<?xindex>
-// C_HECK-DAG:       %[[VAL_6:.*]] = sparse_tensor.values %[[VAL_0]] : tensor<4x4x4xf64, #sparse{{[0-9]*}}> to memref<?xf64>
+// C_HECK-DAG:       %[[VAL_5:.*]] = sparse_tensor.positions %[[VAL_0]] {level = 1 : index} : tensor<4x4x4xf64, #sparse{{[0-9]*}}>
+// C_HECK-DAG:       %[[VAL_6:.*]] = sparse_tensor.values %[[VAL_0]] : tensor<4x4x4xf64, #sparse{{[0-9]*}}>
 // C_HECK:           scf.for %[[VAL_7:.*]] = %[[VAL_2]] to %[[VAL_1]] step %[[VAL_3]] {
 // C_HECK:             %[[VAL_8:.*]] = arith.muli %[[VAL_7]], %[[VAL_4]] : index
 // C_HECK:             %[[VAL_9:.*]] = memref.load %[[VAL_5]]{{\[}}%[[VAL_8]]] : memref<?xindex>

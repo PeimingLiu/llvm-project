@@ -93,7 +93,7 @@ module {
     %n = sparse_tensor.number_of_entries %A : tensor<9x4xf64, #MAT_C_C>
     vector.print %n : index
 
-    %1 = sparse_tensor.values %A : tensor<9x4xf64, #MAT_C_C> to memref<?xf64>
+    %1 = sparse_tensor.values %A : tensor<9x4xf64, #MAT_C_C>
     call @printMemref1dF64(%1) : (memref<?xf64>) -> ()
 
     return
